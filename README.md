@@ -1,6 +1,7 @@
 # idapython-arm32-syscall-fetch
 
-![image](https://user-images.githubusercontent.com/109819333/180492125-88593e2a-53f8-431b-9bf4-1c57591bbcae.png)
+![image](https://user-images.githubusercontent.com/109819333/180494616-9a72f48d-2170-457a-8dc8-33bbc279487b.png)
+
 
 
 [IDA Pro Version 7.4 or later]
