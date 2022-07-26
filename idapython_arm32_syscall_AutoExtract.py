@@ -840,6 +840,17 @@ def findLDRSvc(startAddr,endAddr,addrList):
 
     del addrList[-1]
 
+def findMOVWSvc(startAddr,endAddr,addrList):
+    while startAddr < endAddr:
+        addr=idc.find_binary(startAddr, 1, "00 E3 00 00 00 EF")
+        if startAddr==idc.BADADDR:
+            break
+        else:
+            addrList.append(addr)
+            startAddr=addr+1
+
+    del addrList[-1]
+
 
 def main():
     startAddr=ida_ida.inf_get_min_ea() #시작주소
@@ -880,6 +891,28 @@ def main():
         i=i+1
     
     writeCmt(addrList2,opnd) # 해당하는 syscall 찾은 후 해당 주소에 comment 달기
+    
+    ############################################
+    
+    addrList3=[] # "MOVW a b" "SVC 0" 찾기 위한 리스트
+    
+    findMOVWSvc(startAddr,endAddr,addrList3) # 처음부터 끝까지 "MOVW a b" "SVC 0" 찾아서 addrList3[]에 저장
+    totalList.append(addrList3)
+    
+    #syscall Number 찾기
+    opnd2=[]
+    rgx2=re.compile('#\d+')
+    i=0
+    while i < len(addrList3):
+        idc.op_dec(addrList3[i]-2,1) #operand에서 hex로 되어있는 syscall 값을 decimal로 변환
+        opnd2.append(idc.generate_disasm_line(addrList3[i]-2,0)) #disassembly 내용을 opnd 리스트에 저장
+        tmp=rgx2.findall(opnd2[i])
+        opnd2[i]=tmp[0]
+        opnd2[i]=opnd2[i].replace('#','') #syscall 값만 추출
+        opnd2[i]=int(opnd2[i]) #type을 str에서 int로 변환
+        i=i+1
+    
+    writeCmt(addrList3,opnd2) # 해당하는 syscall 찾은 후 해당 주소에 comment 달기
     
     ############################################
 
